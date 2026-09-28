@@ -19,7 +19,7 @@ cloudinary.config({
 const app = express();
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-app.use(cors({ origin: process.env.FRONTEND_URL || "http://localhost:5173" }));
+app.use(cors({ origin: "*" }));
 app.use(express.json());
 
 const upload = multer({
