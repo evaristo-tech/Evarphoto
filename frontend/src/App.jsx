@@ -1,10 +1,10 @@
 import { useState, useRef } from "react";
 
-const API_URL = "http://localhost:4000";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
 const COUNTRIES = [
   { code: "US", name: "United States", flag: "US", docs: [
-    { id: "passport", label: "Passport", w: 51, h: 51, bg: "#FFFFFF", dpi: 300, notes: "Head 25-35mm, white background" },
+    { id: "passport", label: "Passport", w: 51, h: 51, bg: "#0e0b0b", dpi: 300, notes: "Head 25-35mm, white background" },
   ]},
   { code: "UK", name: "United Kingdom", flag: "UK", docs: [
     { id: "passport", label: "Passport", w: 35, h: 45, bg: "#FFFFFF", dpi: 300, notes: "Head 29-34mm, white background" },
