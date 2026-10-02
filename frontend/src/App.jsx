@@ -92,6 +92,7 @@ export default function EvarPhoto() {
   const [email, setEmail] = useState("");
   const [plan, setPlan] = useState("single");
   const [dragOver, setDragOver] = useState(false);
+const [showPayment, setShowPayment] = useState(false);
   const fileRef = useRef();
 
   const getFilterStyle = () => "brightness(" + brightness + "%) contrast(" + contrast + "%)";
@@ -270,10 +271,9 @@ export default function EvarPhoto() {
           <p style={{ textAlign: "center", color: "rgba(255,255,255,0.4)", fontSize: 16, marginBottom: 48 }}>No subscription. Pay only when you download.</p>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 20 }}>
             {[
-              { plan: "Free", price: "K0 / $0", desc: "Try before you buy", features: ["2 watermarked photos", "5 countries", "Basic compliance check"], cta: "Try Free" },
-              { plan: "Basic", price: "K20 / $1.25", desc: "Perfect for one document", features: ["4 print-ready photos", "100+ countries", "AI background removal", "Email delivery", "Money-back guarantee"], cta: "Get Photos", highlight: true },
-              { plan: "Premium", price: "K35 / $2.50", desc: "Best value for families", features: ["8 print-ready photos", "All countries & doc types", "Bulk print layout", "Priority processing", "Email delivery"], cta: "Get Premium" },
-            
+              { plan: "Free", price: "ZMW0", desc: "Try before you buy", features: ["2 watermarked photos", "5 countries", "Basic compliance check"], cta: "Try Free" },
+               { plan: "Basic", price: "ZMW10", desc: "Perfect for one document", features: ["4 print-ready photos", "100+ countries", "AI background removal", "Email delivery", "Money-back guarantee"], cta: "Get Photos", highlight: true },
+              { plan: "Premium", price: "ZMW25", desc: "Best value for families", features: ["8 print-ready photos", "All countries & doc types", "Bulk print layout", "Priority processing", "Email delivery"], cta: "Get Premium" },
             ].map(function(p) { return (
               <div key={p.plan} style={{
                 position: "relative",
@@ -569,8 +569,8 @@ export default function EvarPhoto() {
             <div style={{ marginBottom: 16 }}>
               <div style={{ fontSize: 11, fontWeight: 600, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>Choose Plan</div>
               {[
-                { id: "single", label: "Single Photo", price: "$2.99", sub: "1 download + email delivery" },
-                { id: "family", label: "Family Pack", price: "$7.99", sub: "Up to 6 photos + bulk sheet" },
+                { id: "single", label: "Basic Plan", price: "K10", sub: "4 photos + email delivery" },
+{ id: "family", label: "Premium Plan", price: "K25", sub: "8 photos + bulk sheet" },
               ].map(function(p) { return (
                 <button key={p.id} onClick={() => setPlan(p.id)}
                   style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", padding: "14px 16px", background: plan === p.id ? "rgba(99,102,241,0.2)" : "rgba(255,255,255,0.03)", border: plan === p.id ? "1px solid rgba(99,102,241,0.5)" : "1px solid rgba(255,255,255,0.06)", borderRadius: 10, cursor: "pointer", marginBottom: 8, boxSizing: "border-box" }}>
@@ -589,14 +589,104 @@ export default function EvarPhoto() {
               <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@email.com"
                 style={{ width: "100%", padding: "12px 16px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, fontSize: 14, color: "#fff", outline: "none", boxSizing: "border-box" }} />
             </div>
-            <a href={previewUrl} download="evarphoto_free.jpg" target="_blank"
+
+            <button onClick={function() {
+  const img = new Image();
+  img.crossOrigin = "anonymous";
+  img.onload = function() {
+    const canvas = document.createElement("canvas");
+    canvas.width = img.width;
+    canvas.height = img.height;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0);
+    ctx.fillStyle = "rgba(255,255,255,0.5)";
+    ctx.font = "bold " + Math.floor(img.width / 12) + "px Arial";
+    ctx.textAlign = "center";
+    ctx.translate(canvas.width / 2, canvas.height / 2);
+    ctx.rotate(-0.4);
+    ctx.fillText("evarphoto.vercel.app", 0, 0);
+    ctx.fillText("evarphoto.vercel.app", 0, img.height / 3);
+    ctx.fillText("evarphoto.vercel.app", 0, -img.height / 3);
+    const a = document.createElement("a");
+    a.href = canvas.toDataURL("image/jpeg", 0.9);
+    a.download = "evarphoto_free_watermarked.jpg";
+    a.click();
+  };
+  img.src = previewUrl;
+}}
   style={{ display: "block", width: "100%", padding: "12px 0", background: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.6)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, fontSize: 14, cursor: "pointer", fontWeight: 500, marginBottom: 10, textAlign: "center", textDecoration: "none", boxSizing: "border-box" }}>
   ⬇️ Download Free (2 photos with watermark)
-</a>
-            <button
-              style={{ width: "100%", padding: "16px 0", background: "linear-gradient(135deg,#6366f1,#8b5cf6)", color: "#fff", border: "none", borderRadius: 10, fontSize: 16, cursor: "pointer", fontWeight: 700, marginBottom: 10, boxShadow: "0 8px 30px rgba(99,102,241,0.4)" }}>
-              💳 Pay {plan === "single" ? "K20 / $1.25" : "K35 / $2.50"} — Download
-            </button>
+</button>
+          <button onClick={function() { setShowPayment(true); }}
+  style={{ width: "100%", padding: "16px 0", background: "linear-gradient(135deg,#6366f1,#8b5cf6)", color: "#fff", border: "none", borderRadius: 10, fontSize: 16, cursor: "pointer", fontWeight: 700, marginBottom: 10, boxShadow: "0 8px 30px rgba(99,102,241,0.4)" }}>
+  💳 Pay {plan === "single" ? "K10" : "K25"} — Download
+</button>
+
+{showPayment && (
+  <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 999, padding: 24 }}>
+    <div style={{ background: "#0a0a0f", border: "1px solid rgba(99,102,241,0.3)", borderRadius: 16, padding: 32, maxWidth: 480, width: "100%", position: "relative" }}>
+      <button onClick={function() { setShowPayment(false); }}
+        style={{ position: "absolute", top: 16, right: 16, background: "rgba(255,255,255,0.05)", border: "none", color: "#fff", width: 32, height: 32, borderRadius: "50%", cursor: "pointer", fontSize: 16 }}>
+        ✕
+      </button>
+
+      <div style={{ textAlign: "center", marginBottom: 24 }}>
+        <div style={{ fontSize: 32, marginBottom: 8 }}>💳</div>
+        <h3 style={{ fontSize: 20, fontWeight: 800, margin: "0 0 4px" }}>Complete Payment</h3>
+        <div style={{ fontSize: 14, color: "rgba(255,255,255,0.5)" }}>
+          {plan === "single" ? "Basic Plan — K10" : "Premium Plan — K25"}
+        </div>
+      </div>
+
+      <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: 20, marginBottom: 16 }}>
+        <div style={{ fontSize: 13, fontWeight: 700, color: "#a5b4fc", marginBottom: 12 }}>🇿🇲 Zambia — Mobile Money</div>
+        
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ width: 36, height: 36, background: "rgba(255,0,0,0.2)", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>📱</div>
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>Airtel Money</div>
+              <div style={{ fontSize: 13, color: "#a5b4fc", fontWeight: 700 }}>+260 979 692 667</div>
+            </div>
+          </div>
+          <button onClick={function() { navigator.clipboard.writeText("0979692667"); alert("Airtel number copied!"); }}
+            style={{ background: "rgba(99,102,241,0.2)", border: "1px solid rgba(99,102,241,0.3)", color: "#a5b4fc", borderRadius: 6, padding: "6px 12px", fontSize: 12, cursor: "pointer", fontWeight: 600 }}>
+            Copy
+          </button>
+        </div>
+
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 0" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ width: 36, height: 36, background: "rgba(255,165,0,0.2)", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>📱</div>
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>MTN Mobile Money</div>
+              <div style={{ fontSize: 13, color: "#fbbf24", fontWeight: 700 }}>+260 964 078 439</div>
+            </div>
+          </div>
+          <button onClick={function() { navigator.clipboard.writeText("0964078439"); alert("MTN number copied!"); }}
+            style={{ background: "rgba(251,191,36,0.2)", border: "1px solid rgba(251,191,36,0.3)", color: "#fbbf24", borderRadius: 6, padding: "6px 12px", fontSize: 12, cursor: "pointer", fontWeight: 600 }}>
+            Copy
+          </button>
+        </div>
+      </div>
+
+      <div style={{ background: "rgba(37,211,102,0.1)", border: "1px solid rgba(37,211,102,0.3)", borderRadius: 12, padding: 16, marginBottom: 16 }}>
+        <div style={{ fontSize: 13, fontWeight: 700, color: "#4ade80", marginBottom: 8 }}>📱 After paying — Send proof to WhatsApp</div>
+        <div style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", marginBottom: 12 }}>Send your payment screenshot and this email to receive your photo:</div>
+        <div style={{ fontSize: 14, color: "#4ade80", fontWeight: 700, marginBottom: 12 }}>+260 979 692 667</div>
+        <a href={"https://wa.me/260979692667?text=Hi%20EvarPhoto!%20I%20just%20paid%20for%20the%20" + (plan === "single" ? "Basic" : "Premium") + "%20plan%20(" + (plan === "single" ? "ZMW10" : "ZMW25") + ").%20Please%20send%20my%20passport%20photo.%20Email%3A%20" + (email || "my-email@example.com")}
+          target="_blank"
+          style={{ display: "block", textAlign: "center", background: "linear-gradient(135deg,#25d366,#128c7e)", color: "#fff", fontWeight: 700, fontSize: 14, padding: "12px 20px", borderRadius: 10, textDecoration: "none" }}>
+          💬 Open WhatsApp to Send Proof
+        </a>
+      </div>
+
+      <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: 12, fontSize: 12, color: "rgba(255,255,255,0.4)", textAlign: "center" }}>
+        🌍 International customers — contact us on WhatsApp for card payment options
+      </div>
+    </div>
+  </div>
+)}
 
             <button onClick={() => setStep("editor")}
               style={{ width: "100%", padding: "12px 0", background: "rgba(255,255,255,0.03)", color: "rgba(255,255,255,0.6)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, fontSize: 14, cursor: "pointer", fontWeight: 500, marginBottom: 16 }}>
